@@ -1809,6 +1809,12 @@ void TimProduct::initializeRosDiagnostics() {
   updater->force_update();
 }
 
+void rtcmCallback(const mavros_msgs::RTCM::ConstPtr &msg)
+{
+  gps.sendRtcm(msg->data);
+}
+
+
 int main(int argc, char** argv) {
   ros::init(argc, argv, "ublox_gps");
   nh.reset(new ros::NodeHandle("~"));
@@ -1819,6 +1825,12 @@ int main(int argc, char** argv) {
      ros::console::notifyLoggerLevelsChanged();
 
   }
+
+  ros::NodeHandle param_nh("~");
+  std::string rtcm_topic;
+  param_nh.param("rtcm_topic", rtcm_topic, std::string("rtcm"));
+  subRTCM = nh->subscribe(rtcm_topic, 10, rtcmCallback);
+  
   UbloxNode node;
   return 0;
 }

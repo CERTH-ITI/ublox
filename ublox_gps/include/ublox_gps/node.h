@@ -56,6 +56,8 @@
 #include <ublox_gps/gps.h>
 #include <ublox_gps/utils.h>
 #include <ublox_gps/raw_data_pa.h>
+// RTCM related msg
+#include <mavros_msgs/RTCM.h>
 
 // This file declares the ComponentInterface which acts as a high level
 // interface for u-blox firmware, product categories, etc. It contains methods
@@ -98,6 +100,8 @@ constexpr static uint32_t kNavSvInfoSubscribeRate = 20;
 boost::shared_ptr<diagnostic_updater::Updater> updater;
 //! Node Handle for GPS node
 boost::shared_ptr<ros::NodeHandle> nh;
+//!! Subscriber to RTCM messages
+ros::Subscriber subRTCM;
 
 //! Handles communication with the U-Blox Device
 ublox_gps::Gps gps;
