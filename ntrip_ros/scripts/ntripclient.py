@@ -12,9 +12,13 @@ from threading import Thread
 from httplib import HTTPConnection
 from httplib import IncompleteRead
 
+import socket
+
 ''' This is to fix the IncompleteRead error
     http://bobrochel.blogspot.com/2010/11/bad-servers-chunked-encoding-and.html'''
 import httplib
+
+
 def patch_http_response_read(func):
     def inner(*args):
         try:
@@ -22,7 +26,25 @@ def patch_http_response_read(func):
         except httplib.IncompleteRead, e:
             return e.partial
     return inner
+
+
 httplib.HTTPResponse.read = patch_http_response_read(httplib.HTTPResponse.read)
+
+
+def is_connected(hostname):
+    try:
+        # see if we can resolve the host name -- tells us if there is
+        # a DNS listening
+        host = socket.gethostbyname(hostname)
+        # connect to the host -- tells us if the host is actually
+        # reachable
+        s = socket.create_connection((host, 80), 2)
+        s.close()
+        return True
+    except:
+        pass
+    return False
+
 
 class ntripconnect(Thread):
     def __init__(self, ntc):
@@ -39,9 +61,11 @@ class ntripconnect(Thread):
             'Authorization': 'Basic ' + b64encode(self.ntc.ntrip_user + ':' + str(self.ntc.ntrip_pass))
         }
         connection = HTTPConnection(self.ntc.ntrip_server)
-        connection.request('GET', '/'+self.ntc.ntrip_stream, self.ntc.nmea_gga, headers)
+        connection.request('GET', '/'+self.ntc.ntrip_stream,
+                           self.ntc.nmea_gga, headers)
         response = connection.getresponse()
-        if response.status != 200: raise Exception("blah")
+        if response.status != 200:
+            raise Exception("Response.status not 200")
         buf = ""
         rmsg = RTCM()
         restart_count = 0
@@ -69,7 +93,7 @@ class ntripconnect(Thread):
                     data = response.read(2)
                     buf += data
                     typ = (ord(data[0]) * 256 + ord(data[1])) / 16
-                    print (str(datetime.now()), cnt, typ)
+                    print(str(datetime.now()), cnt, typ)
                     cnt = cnt + 1
                     for x in range(cnt):
                         data = response.read(1)
@@ -79,19 +103,23 @@ class ntripconnect(Thread):
                     rmsg.header.stamp = rospy.get_rostime()
                     self.ntc.pub.publish(rmsg)
                     buf = ""
-                else: print (data)
+                else:
+                    print(data)
             else:
                 ''' If zero length data, close connection and reopen it '''
                 restart_count = restart_count + 1
                 print("Zero length ", restart_count)
                 connection.close()
                 connection = HTTPConnection(self.ntc.ntrip_server)
-                connection.request('GET', '/'+self.ntc.ntrip_stream, self.ntc.nmea_gga, headers)
+                connection.request(
+                    'GET', '/'+self.ntc.ntrip_stream, self.ntc.nmea_gga, headers)
                 response = connection.getresponse()
-                if response.status != 200: raise Exception("blah")
+                if response.status != 200:
+                    raise Exception("Response.status not 200")
                 buf = ""
 
         connection.close()
+
 
 class ntripclient:
     def __init__(self):
@@ -101,12 +129,22 @@ class ntripclient:
         self.nmea_topic = rospy.get_param('~nmea_topic', 'nmea')
 
         self.ntrip_server = rospy.get_param('~ntrip_server')
+        self.ntrip_port = rospy.get_param('~ntrip_port')
         self.ntrip_user = rospy.get_param('~ntrip_user')
         self.ntrip_pass = rospy.get_param('~ntrip_pass')
         self.ntrip_stream = rospy.get_param('~ntrip_stream')
         self.nmea_gga = rospy.get_param('~nmea_gga')
 
         self.pub = rospy.Publisher(self.rtcm_topic, RTCM, queue_size=10)
+
+        c = is_connected(self.ntrip_server)
+        while c is False:
+            print("Waiting for active internet connection")
+            c = is_connected(self.ntrip_server)
+
+        self.ntrip_server = self.ntrip_server+':'+str(self.ntrip_port)
+        print("Connected!")
+        print(self.ntrip_server)
 
         self.connection = None
         self.connection = ntripconnect(self)
@@ -117,7 +155,7 @@ class ntripclient:
         if self.connection is not None:
             self.connection.stop = True
 
+
 if __name__ == '__main__':
     c = ntripclient()
     c.run()
-
