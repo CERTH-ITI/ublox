@@ -6,9 +6,9 @@ project(ntrip_ros)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
 #  rtcm_msgs
-#  nmea_msgs
   rospy
   std_msgs
+  mavros_msgs
 )
 
 ## System dependencies are found with CMake's conventions
