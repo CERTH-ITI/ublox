@@ -110,6 +110,12 @@ class ntripconnect(Thread):
                 restart_count = restart_count + 1
                 print("Zero length ", restart_count)
                 connection.close()
+
+                c = is_connected(self.ntrip_server)
+                while c is False:
+                    print("Waiting for active internet connection")
+                    c = is_connected(self.ntrip_server)
+
                 connection = HTTPConnection(self.ntc.ntrip_server)
                 connection.request(
                     'GET', '/'+self.ntc.ntrip_stream, self.ntc.nmea_gga, headers)
