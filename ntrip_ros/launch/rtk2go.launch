@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+	<node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
+		<param name="rtcm_topic" value="/robot/gps/rtcm"/>
+		<param name="ntrip_server" value="www.rtk2go.com"/>
+		<param name="ntrip_port" value="2101"/>
+		<param name="ntrip_user" value=""/>
+		<param name="ntrip_pass" value=""/>
+		<param name="ntrip_stream" value="certh_iti"/>
+		<param name="nmea_gga" value="$GPGGA,133248.876,4034.042,N,02259.831,E,1,12,1.0,0.0,M,0.0,M,,*6B"/> <!-- TO FIX -->
+	</node>
+</launch>
