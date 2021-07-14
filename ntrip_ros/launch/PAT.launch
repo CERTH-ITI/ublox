@@ -11,3 +11,4 @@
 		<param name="nmea_gga" value="$GPGGA,133248.876,4034.042,N,02259.831,E,1,12,1.0,0.0,M,0.0,M,,*6B"/>
 	</node>
 </launch>
+<!-- PAT000GRC0, AUT100GRC0, DYNG00GRC0 -->

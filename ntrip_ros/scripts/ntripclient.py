@@ -83,7 +83,17 @@ class ntripconnect(Thread):
             '''
 
             ''' This now separates individual RTCM messages and publishes each one on the same topic '''
-            data = response.read(1)
+            c = is_connected(self.ntc.ntrip_server)
+            if (not c):
+                while c is False:
+                    print("Waiting for active internet connection")
+                    c = is_connected(self.ntc.ntrip_server)
+            else:
+                try:
+                    data = response.read(1)
+                except:
+                    pass                
+                    
             if len(data) != 0:
                 if ord(data[0]) == 211:
                     buf += data
