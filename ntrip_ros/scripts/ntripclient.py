@@ -60,7 +60,7 @@ class ntripconnect(Thread):
             'Connection': 'close',
             'Authorization': 'Basic ' + b64encode(self.ntc.ntrip_user + ':' + str(self.ntc.ntrip_pass))
         }
-        connection = HTTPConnection(self.ntc.ntrip_server)
+        connection = HTTPConnection(self.ntc.ntrip_server+':'+str(self.ntc.ntrip_port))
         connection.request('GET', '/'+self.ntc.ntrip_stream,
                            self.ntc.nmea_gga, headers)
         response = connection.getresponse()
@@ -84,9 +84,8 @@ class ntripconnect(Thread):
 
             ''' This now separates individual RTCM messages and publishes each one on the same topic '''
             c = is_connected(self.ntc.ntrip_server)
-            if (not c):
+            if (c is False):
                 while c is False:
-                    print("Waiting for active internet connection")
                     c = is_connected(self.ntc.ntrip_server)
             else:
                 try:
@@ -158,9 +157,9 @@ class ntripclient:
             print("Waiting for active internet connection")
             c = is_connected(self.ntrip_server)
 
-        self.ntrip_server = self.ntrip_server+':'+str(self.ntrip_port)
+        # self.ntrip_server = self.ntrip_server+':'+str(self.ntrip_port)
         print("Connected!")
-        print(self.ntrip_server)
+        print(self.ntrip_server+':'+str(self.ntrip_port))
 
         self.connection = None
         self.connection = ntripconnect(self)
