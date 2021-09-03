@@ -85,13 +85,14 @@ class ntripconnect(Thread):
             ''' This now separates individual RTCM messages and publishes each one on the same topic '''
             c = is_connected(self.ntc.ntrip_server)
             if (c is False):
-                while c is False:
-                    c = is_connected(self.ntc.ntrip_server)
+                print("Not connected\n")
+                continue
             else:
                 try:
                     data = response.read(1)
                 except:
-                    pass                
+                    print("Cannot read\n")
+                    continue                
                     
             if len(data) != 0:
                 if ord(data[0]) == 211:
