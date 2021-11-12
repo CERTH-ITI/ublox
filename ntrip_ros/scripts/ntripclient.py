@@ -9,6 +9,8 @@ from mavros_msgs.msg import RTCM
 from base64 import b64encode
 from threading import Thread
 
+from std_srvs.srv import Empty
+
 from httplib import HTTPConnection
 from httplib import IncompleteRead
 
@@ -119,6 +121,7 @@ class ntripconnect(Thread):
                 ''' If zero length data, close connection and reopen it '''
                 restart_count = restart_count + 1
                 print("Zero length ", restart_count)
+                kill_ntrip()
                 connection.close()
 
                 c = is_connected(self.ntc.ntrip_server)
@@ -141,6 +144,7 @@ class ntripclient:
     def __init__(self):
         rospy.init_node('ntripclient', anonymous=True)
 
+        rospy.wait_for_service('kill_ntrip')
         self.rtcm_topic = rospy.get_param('~rtcm_topic', 'rtcm')
         self.nmea_topic = rospy.get_param('~nmea_topic', 'nmea')
 
@@ -161,7 +165,6 @@ class ntripclient:
         # self.ntrip_server = self.ntrip_server+':'+str(self.ntrip_port)
         print("Connected!")
         print(self.ntrip_server+':'+str(self.ntrip_port))
-
         self.connection = None
         self.connection = ntripconnect(self)
         self.connection.start()
@@ -171,6 +174,14 @@ class ntripclient:
         if self.connection is not None:
             self.connection.stop = True
 
+
+def kill_ntrip():
+    try:
+        kill_client = rospy.ServiceProxy('kill_ntrip', Empty)
+        req = Empty()
+        kill_client.call(req)
+    except rospy.ServiceException as e:
+        print("Service call failed: %s"%e)
 
 if __name__ == '__main__':
     c = ntripclient()
