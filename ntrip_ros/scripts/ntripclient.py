@@ -94,6 +94,7 @@ class ntripconnect(Thread):
                     data = response.read(1)
                 except:
                     print("Cannot read\n")
+                    kill_ntrip()
                     continue                
                     
             if len(data) != 0:
@@ -122,20 +123,20 @@ class ntripconnect(Thread):
                 restart_count = restart_count + 1
                 print("Zero length ", restart_count)
                 kill_ntrip()
-                connection.close()
+                # connection.close()
 
-                c = is_connected(self.ntc.ntrip_server)
-                while c is False:
-                    print("Waiting for active internet connection")
-                    c = is_connected(self.ntc.ntrip_server)
+                # c = is_connected(self.ntc.ntrip_server)
+                # while c is False:
+                #     print("Waiting for active internet connection")
+                #     c = is_connected(self.ntc.ntrip_server)
 
-                connection = HTTPConnection(self.ntc.ntrip_server)
-                connection.request(
-                    'GET', '/'+self.ntc.ntrip_stream, self.ntc.nmea_gga, headers)
-                response = connection.getresponse()
-                if response.status != 200:
-                    raise Exception("Response.status not 200")
-                buf = ""
+                # connection = HTTPConnection(self.ntc.ntrip_server)
+                # connection.request(
+                #     'GET', '/'+self.ntc.ntrip_stream, self.ntc.nmea_gga, headers)
+                # response = connection.getresponse()
+                # if response.status != 200:
+                #     raise Exception("Response.status not 200")
+                # buf = ""
 
         connection.close()
 
@@ -176,10 +177,10 @@ class ntripclient:
 
 
 def kill_ntrip():
+    rospy.wait_for_service('kill_ntrip')
+    kill_client = rospy.ServiceProxy('kill_ntrip', Empty)
     try:
-        kill_client = rospy.ServiceProxy('kill_ntrip', Empty)
-        req = Empty()
-        kill_client.call(req)
+        resp = kill_client()
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
 
