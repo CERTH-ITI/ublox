@@ -107,7 +107,7 @@ namespace ublox_gps
    */
   void initializeUdp(std::string host, std::string port);
 
-  /**
+    /**
    * @brief Initialize the Serial I/O port.
    * @param port the device port address
    * @param baudrate the desired baud rate of the port
@@ -131,7 +131,7 @@ namespace ublox_gps
   */
   bool sendRtcm(const std::vector<uint8_t> &message);
 
-  /**
+    /**
    * @brief Closes the I/O port, and initiates save on shutdown procedure
    * if enabled.
    */
