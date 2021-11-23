@@ -2,6 +2,7 @@
 The `ublox` package provides support for [u-blox](http://www.u-blox.com) GPS receivers. Only the _serial_ configuration of the driver is documented here, but TCP/UDP communication is also supported by the driver (untested).
 
 The driver was originally written by Johannes Meyer. Changes made later are detailed in the version history below.
+Modified the "ros-agriculture/ublox_f9p" repository, to keep the changes for NTRIP server but make it work for newer versions of UBlox firmware.
 
 ## Options
 
