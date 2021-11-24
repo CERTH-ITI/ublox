@@ -5,6 +5,7 @@ from datetime import datetime
 
 #from nmea_msgs.msg import Sentence
 from mavros_msgs.msg import RTCM
+from rtcm_msgs.msg import Message
 
 from base64 import b64encode
 from threading import Thread
@@ -69,7 +70,8 @@ class ntripconnect(Thread):
         if response.status != 200:
             raise Exception("Response.status not 200")
         buf = ""
-        rmsg = RTCM()
+        # rmsg = RTCM()
+        rmsg = Message()
         restart_count = 0
         while not self.stop:
             '''
@@ -111,7 +113,7 @@ class ntripconnect(Thread):
                     for x in range(cnt):
                         data = response.read(1)
                         buf += data
-                    rmsg.data = buf
+                    rmsg.message = buf
                     rmsg.header.seq += 1
                     rmsg.header.stamp = rospy.get_rostime()
                     self.ntc.pub.publish(rmsg)
@@ -156,7 +158,8 @@ class ntripclient:
         self.ntrip_stream = rospy.get_param('~ntrip_stream')
         self.nmea_gga = rospy.get_param('~nmea_gga')
 
-        self.pub = rospy.Publisher(self.rtcm_topic, RTCM, queue_size=10)
+        # self.pub = rospy.Publisher(self.rtcm_topic, RTCM, queue_size=10)
+        self.pub = rospy.Publisher(self.rtcm_topic, Message, queue_size=10)
 
         c = is_connected(self.ntrip_server)
         while c is False:
