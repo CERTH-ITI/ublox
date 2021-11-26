@@ -11,5 +11,9 @@
 		<param name="nmea_gga" value="$GPGGA,133248.876,4034.042,N,02259.831,E,1,12,1.0,0.0,M,0.0,M,,*6B"/> <!-- TO FIX -->
 	</node>
 
-	<node pkg="ntrip_ros" type="restart_client.py" name="restart_client_node" output="screen"/>
+	<node pkg="ntrip_ros" type="restart_client.py" name="restart_client_node" output="screen">
+		<param name="bus_id"	value="'001'"/>
+		<param name="device_id"	value="'008'"/>
+	</node>
+
 </launch>
