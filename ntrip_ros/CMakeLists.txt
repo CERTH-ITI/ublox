@@ -119,6 +119,11 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+
+add_executable(usbreset src/usbreset.c)
+target_link_libraries(usbreset
+)
+
 ## Declare a C++ library
 # add_library(ntrip_ros
 #   src/${PROJECT_NAME}/ntrip_ros.cpp
