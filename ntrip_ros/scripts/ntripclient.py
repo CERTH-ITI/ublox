@@ -108,6 +108,8 @@ class ntripconnect(Thread):
                     typ = (ord(data[0]) * 256 + ord(data[1])) / 16
                     print(str(datetime.now()), cnt, typ)
                     cnt = cnt + 1
+                    if(cnt > 2000 ):
+                        continue
                     for x in range(cnt):
                         data = response.read(1)
                         buf += data

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <launch>
-	<node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen">
+	<node pkg="ntrip_ros" type="ntripclient.py" name="ntrip_ros" output="screen" respawn="true">
 		<param name="rtcm_topic" value="/robot/gps/rtcm"/>
 		<param name="ntrip_server" value="www.euref-ip.net"/>
 		<param name="ntrip_port" value="2101"/>
@@ -10,5 +10,7 @@
 		<param name="ntrip_stream" value="AUT100GRC0"/>
 		<param name="nmea_gga" value="$GPGGA,133248.876,4034.042,N,02259.831,E,1,12,1.0,0.0,M,0.0,M,,*6B"/>
 	</node>
+
+	<node pkg="ntrip_ros" type="restart_client.py" name="restart_client_node" output="screen"/>
 </launch>
 <!-- PAT000GRC0, AUT100GRC0, DYNG00GRC0 -->
